@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/pengajuan-baru', function () {
+    return view('pengajuan.form'); // resources/views/pengajuan/form.blade.php
 });
