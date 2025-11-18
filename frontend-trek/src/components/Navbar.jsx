@@ -7,7 +7,7 @@ export default function Navbar({ onLoginClick }) {
         left: 0,
         width: "100%",
         background: "#1a1a1a",
-        padding: "15px 40px",     // <<< TAMBAHIN padding kiri kanan
+        padding: "15px 40px",
         color: "white",
         display: "flex",
         justifyContent: "space-between",
@@ -20,7 +20,7 @@ export default function Navbar({ onLoginClick }) {
 
       <button
         style={{
-          padding: "8px 15px",      // <<< tombol lebih lebar biar jelas
+          padding: "8px 15px",
           background: "#646cff",
           border: "none",
           borderRadius: "8px",
