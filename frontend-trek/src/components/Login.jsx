@@ -15,7 +15,7 @@ function Login({ onClose }) {
   const handleLogin = (e) => {
     e.preventDefault();
     if (email === "admin@yarsi.ac.id" && password === "admin123") {
-      navigate("/pengajuan");
+      navigate("/dashboard");
     } else {
       alert("Email atau password salah!");
     }

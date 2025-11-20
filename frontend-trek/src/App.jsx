@@ -6,6 +6,7 @@ import './App.css'
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Pengajuan from "./components/Pengajuan";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -31,7 +32,8 @@ function App() {
           }
         />
 
-        <Route path="/pengajuan" element={<Pengajuan />} />
+        <Route path="/pengajuan" element={<Pengajuan onLogout={() => setShowLogin(true)} />}/>
+        <Route path="/dashboard" element={<Dashboard />}/>
       </Routes>
     </BrowserRouter>
   );

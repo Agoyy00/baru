@@ -78,6 +78,9 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 0 ;
+  height: 100%;
+  max-height: 500px; 
 }
 
 .right-side form {
@@ -85,6 +88,7 @@
   flex-direction: column;
   width: 250px;
   gap: 1rem;
+  margin-top: 0;
 }
 
 .right-side input {

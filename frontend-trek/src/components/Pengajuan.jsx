@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./Pengajuan.css";
+import { useNavigate } from "react-router-dom";
 
 export default function PengajuanForm() {
   const [currentStep, setCurrentStep] = useState(1);
+  const navigate = useNavigate();
+
 
   // STEP 1 – data pengajuan
   const [tahunAkademik, setTahunAkademik] = useState("");
@@ -185,17 +188,17 @@ export default function PengajuanForm() {
       {/* SIDEBAR */}
       <aside className="sidebar">
         <div>
-          <div className="sidebar-logo">Sistem pengajuan ATK</div>
+          <div className="sidebar-logo">Sistem Pengajuan ATK</div>
           <div className="sidebar-subtitle">Universitas Yarsi</div>
         </div>
 
         <nav className="sidebar-menu">
-          <div className="menu-item">Dashboard</div>
+          <div className="menu-item" onClick={() => navigate("/dashboard")} style={{ cursor: "pointer" }}>Dashboard</div>
           <div className="menu-item disabled">Buat Pengajuan Baru</div>
-          <div className="menu-item">Riwayat pengajuan</div>
+          <div className="menu-item">Riwayat Pengajuan</div>
         </nav>
 
-        <div className="logout">Log Out</div>
+        <div className="logout" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>Log Out</div>
       </aside>
 
       {/* KANAN */}
