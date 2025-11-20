@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Pengajuan.css";
 
-export default function PengajuanForm() {
+function Pengajuan() {
   const [currentStep, setCurrentStep] = useState(1);
 
   // STEP 1 – data pengajuan
@@ -20,21 +20,15 @@ export default function PengajuanForm() {
   const [items, setItems] = useState([]);
   const [step2Error, setStep2Error] = useState("");
 
-  const API_BASE = "http://127.0.0.1:8000/api"; // backend Laravel
+  const API_BASE = "http://127.0.0.1:8000/api"; // endpoint Laravel
 
   const showStep = (step) => setCurrentStep(step);
 
   const getStepperLabel = () => {
-    if (currentStep === 1) {
-      return "Stepper: Data Pengajuan → Input Barang → Konfirmasi";
-    }
-    if (currentStep === 2) {
-      return "Stepper: Data Pengajuan → Input Barang → Konfirmasi";
-    }
     return "Stepper: Data Pengajuan → Input Barang → Konfirmasi";
   };
 
-  // 🔍 AUTO-SUGGEST barang
+  // 🔍 AUTO-SUGGEST barang dengan debounce
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -59,6 +53,7 @@ export default function PengajuanForm() {
     return () => clearTimeout(timeoutId);
   }, [query]);
 
+  // ➕ Tambah barang ke daftar item
   const handleAddItem = (barang) => {
     const exists = items.some((i) => i.id === barang.id);
     if (exists) return;
@@ -69,10 +64,10 @@ export default function PengajuanForm() {
         id: barang.id,
         nama: barang.nama,
         satuan: barang.satuan,
-        stok: barang.stok,
-        kebutuhanTotal: 1,
-        jumlahDiajukan: 1,
-        estimasiNilai: barang.harga_satuan,
+        kebutuhanTotal: 0,
+        sisaStok: 0,
+        jumlahDiajukan: 0,
+        estimasiNilai: barang.harga_satuan, // harga satuan
       },
     ]);
 
@@ -81,19 +76,7 @@ export default function PengajuanForm() {
     setStep2Error("");
   };
 
-  const handleChangeItem = (id, field, value) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, [field]: Number(value) || 0 } : item
-      )
-    );
-  };
-
-  const handleRemoveItem = (id) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  };
-
-  // 🔢 blok huruf di input angka (kebutuhanTotal & jumlahDiajukan)
+  // 🔢 hanya boleh angka di input number
   const handleNumericKeyDown = (e) => {
     const allowedKeys = [
       "Backspace",
@@ -108,6 +91,48 @@ export default function PengajuanForm() {
       e.preventDefault();
     }
   };
+
+  // ketika kebutuhan total berubah → hitung jumlah diajukan = kebutuhan - sisa
+  const handleChangeKebutuhan = (id, value) => {
+    const num = Number(value) || 0;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const sisa = item.sisaStok || 0;
+        const jumlahDiajukan = Math.max(num - sisa, 0);
+        return { ...item, kebutuhanTotal: num, jumlahDiajukan };
+      })
+    );
+  };
+
+  // ketika sisa stok berubah → hitung jumlah diajukan = kebutuhan - sisa
+  const handleChangeSisaStok = (id, value) => {
+    const num = Number(value) || 0;
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const kebutuhan = item.kebutuhanTotal || 0;
+        const jumlahDiajukan = Math.max(kebutuhan - num, 0);
+        return { ...item, sisaStok: num, jumlahDiajukan };
+      })
+    );
+  };
+
+  const handleRemoveItem = (id) => {
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  };
+
+  // 💰 Total nilai semua item (jumlahDiajukan * harga_satuan)
+  const totalNilai = items.reduce(
+    (sum, item) => sum + item.jumlahDiajukan * item.estimasiNilai,
+    0
+  );
+
+  // 🔢 total jumlah diajukan semua item
+  const totalJumlahDiajukan = items.reduce(
+    (sum, item) => sum + item.jumlahDiajukan,
+    0
+  );
 
   // ✅ Validasi STEP 1
   const handleNextFromStep1 = () => {
@@ -154,7 +179,7 @@ export default function PengajuanForm() {
     );
     if (adaJumlahKosong) {
       setStep2Error(
-        "Jumlah diajukan untuk setiap barang harus lebih dari 0."
+        "Jumlah diajukan harus lebih dari 0. Isi kebutuhan total & sisa stok dengan benar."
       );
       return;
     }
@@ -172,6 +197,8 @@ export default function PengajuanForm() {
       jabatan,
       unit,
       items,
+      total_nilai: totalNilai,
+      total_jumlah_diajukan: totalJumlahDiajukan,
     };
 
     console.log("Data siap dikirim ke backend:", payload);
@@ -361,9 +388,7 @@ export default function PengajuanForm() {
                       onChange={(e) => setQuery(e.target.value)}
                     />
                     {loadingSearch && (
-                      <div className="search-loading">
-                        mencari...
-                      </div>
+                      <div className="search-loading">mencari...</div>
                     )}
 
                     {/* DROPDOWN REKOMENDASI */}
@@ -377,7 +402,7 @@ export default function PengajuanForm() {
                           >
                             <div>{b.nama}</div>
                             <div className="search-item-meta">
-                              {b.kode} · Stok: {b.stok} · {b.satuan}
+                              {b.kode} · Stok gudang: {b.stok} · {b.satuan}
                             </div>
                           </li>
                         ))}
@@ -387,9 +412,7 @@ export default function PengajuanForm() {
                 </div>
 
                 {/* TABEL ITEM */}
-                <div className="table-title">
-                  Item yang diajukan
-                </div>
+                <div className="table-title">Item yang diajukan</div>
 
                 <div className="table-wrapper">
                   <table>
@@ -397,23 +420,28 @@ export default function PengajuanForm() {
                       <tr>
                         <th>Barang</th>
                         <th>Satuan</th>
+                        <th>Harga Satuan</th>
                         <th>Kebutuhan Total</th>
-                        <th>Sisa stok</th>
+                        <th>Sisa stok saat ini</th>
                         <th>Jumlah Diajukan</th>
-                        <th>Estimasi Nilai</th>
+                        <th>Harga Total</th>
                         <th>Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
                       {items.length === 0 && (
                         <tr>
-                          <td colSpan="7">Belum ada item.</td>
+                          <td colSpan="8">Belum ada item.</td>
                         </tr>
                       )}
                       {items.map((item) => (
                         <tr key={item.id}>
                           <td>{item.nama}</td>
                           <td>{item.satuan}</td>
+                          <td>
+                            Rp{" "}
+                            {item.estimasiNilai.toLocaleString("id-ID")}
+                          </td>
                           <td>
                             <input
                               type="number"
@@ -422,34 +450,34 @@ export default function PengajuanForm() {
                               className="input-number"
                               value={item.kebutuhanTotal}
                               onChange={(e) =>
-                                handleChangeItem(
+                                handleChangeKebutuhan(
                                   item.id,
-                                  "kebutuhanTotal",
                                   e.target.value
                                 )
                               }
                             />
                           </td>
-                          <td>{item.stok}</td>
                           <td>
                             <input
                               type="number"
                               inputMode="numeric"
                               onKeyDown={handleNumericKeyDown}
                               className="input-number"
-                              value={item.jumlahDiajukan}
+                              value={item.sisaStok}
                               onChange={(e) =>
-                                handleChangeItem(
+                                handleChangeSisaStok(
                                   item.id,
-                                  "jumlahDiajukan",
                                   e.target.value
                                 )
                               }
                             />
                           </td>
+                          <td>{item.jumlahDiajukan}</td>
                           <td>
                             Rp{" "}
-                            {item.estimasiNilai.toLocaleString("id-ID")}
+                            {(
+                              item.jumlahDiajukan * item.estimasiNilai
+                            ).toLocaleString("id-ID")}
                           </td>
                           <td>
                             <span
@@ -465,6 +493,14 @@ export default function PengajuanForm() {
                   </table>
                 </div>
 
+                {/* Total nilai semua item */}
+                <div className="total-nilai">
+                  Total nilai pengajuan:{" "}
+                  <strong>
+                    Rp {totalNilai.toLocaleString("id-ID")}
+                  </strong>
+                </div>
+
                 {step2Error && (
                   <div className="error-text" style={{ marginTop: 8 }}>
                     {step2Error}
@@ -475,7 +511,7 @@ export default function PengajuanForm() {
                   <button
                     type="button"
                     className="btn"
-                    onClick={() => showStep(1)}
+                    onClick={() => setCurrentStep(1)}
                   >
                     Kembali
                   </button>
@@ -510,17 +546,31 @@ export default function PengajuanForm() {
                   <ul>
                     {items.map((i) => (
                       <li key={i.id}>
-                        {i.nama} — {i.jumlahDiajukan} {i.satuan}
+                        {i.nama} — kebutuhan {i.kebutuhanTotal}, sisa stok{" "}
+                        {i.sisaStok}, <strong>diajukan {i.jumlahDiajukan}</strong>{" "}
+                        {i.satuan}
                       </li>
                     ))}
                   </ul>
                 )}
 
+                <h5>Ringkasan jumlah & nilai:</h5>
+                <p>
+                  Total jumlah diajukan:{" "}
+                  <strong>{totalJumlahDiajukan}</strong>{" "}
+                  (akumulasi semua item)
+                  <br />
+                  Total nilai pengajuan:{" "}
+                  <strong>
+                    Rp {totalNilai.toLocaleString("id-ID")}
+                  </strong>
+                </p>
+
                 <div className="actions">
                   <button
                     type="button"
                     className="btn"
-                    onClick={() => showStep(2)}
+                    onClick={() => setCurrentStep(2)}
                   >
                     Kembali
                   </button>
@@ -537,3 +587,5 @@ export default function PengajuanForm() {
     </div>
   );
 }
+
+export default Pengajuan;

@@ -12,7 +12,7 @@ body {
 .layout {
     display: flex;
     height: 100vh;
-    width: 100%;      /* cukup 100%, 200% bikin geser kanan */
+    width: 100%;
     overflow: hidden;
     margin-left: 0;
 }
@@ -289,6 +289,12 @@ body {
     overflow-x: auto;
 }
 
+.table-title {
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -318,6 +324,14 @@ th {
     color: #d93025;
     font-size: 12px;
     margin-top: 4px;
+}
+
+/* TOTAL NILAI */
+.total-nilai {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
 }
 
 /* SEARCH AUTOCOMPLETE DI STEP 2 */
