@@ -1,19 +1,19 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Pengajuan from "./components/Pengajuan";
+import Riwayat from "./components/Riwayat";
 
 function App() {
-  const [count, setCount] = useState(0)
   const [showLogin, setShowLogin] = useState(false);
 
   return (
     <BrowserRouter>
       <Routes>
+        {/* LANDING PAGE */}
         <Route
           path="/"
           element={
@@ -24,14 +24,16 @@ function App() {
                 <h1>Selamat Datang di Website Pengadaan ATK</h1>
               </div>
 
-              {showLogin && (
-                <Login onClose={() => setShowLogin(false)} />
-              )}
+              {showLogin && <Login onClose={() => setShowLogin(false)} />}
             </>
           }
         />
 
+        {/* HALAMAN PENGAJUAN */}
         <Route path="/pengajuan" element={<Pengajuan />} />
+
+        {/* HALAMAN RIWAYAT PENGAJUAN */}
+        <Route path="/riwayat" element={<Riwayat />} />
       </Routes>
     </BrowserRouter>
   );

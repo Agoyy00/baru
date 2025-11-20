@@ -432,4 +432,26 @@ th {
     .card-subtitle {
         font-size: 12px;
     }
+    /* STATUS BADGE DI RIWAYAT */
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-diajukan {
+  background-color: #f4b000; /* kuning */
+}
+
+.status-diverifikasi {
+  background-color: #007bff; /* biru */
+}
+
+.status-disetujui {
+  background-color: #1f9a3f; /* hijau */
+}
+
 }

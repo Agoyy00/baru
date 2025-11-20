@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./Pengajuan.css";
 
 function Pengajuan() {
@@ -20,15 +21,13 @@ function Pengajuan() {
   const [items, setItems] = useState([]);
   const [step2Error, setStep2Error] = useState("");
 
-  const API_BASE = "http://127.0.0.1:8000/api"; // endpoint Laravel
-
-  const showStep = (step) => setCurrentStep(step);
+  const API_BASE = "http://127.0.0.1:8000/api";
 
   const getStepperLabel = () => {
     return "Stepper: Data Pengajuan → Input Barang → Konfirmasi";
   };
 
-  // 🔍 AUTO-SUGGEST barang dengan debounce
+  // 🔍 AUTO-SUGGEST barang (debounce)
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -188,7 +187,8 @@ function Pengajuan() {
     setCurrentStep(3);
   };
 
-  function handleSubmit(e) {
+  // 🔁 Kirim pengajuan ke backend
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const payload = {
@@ -201,10 +201,31 @@ function Pengajuan() {
       total_jumlah_diajukan: totalJumlahDiajukan,
     };
 
-    console.log("Data siap dikirim ke backend:", payload);
-    alert("(Dummy) Pengajuan dikirim! Lihat console.log untuk datanya.");
+    try {
+      const res = await fetch(`${API_BASE}/pengajuan`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    // TODO: ganti dengan fetch POST ke Laravel
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert("Gagal mengirim pengajuan");
+        console.error("Error pengajuan:", data);
+        return;
+      }
+
+      alert("Pengajuan berhasil dikirim!");
+
+      // Redirect ke halaman riwayat
+      window.location.href = "/riwayat";
+    } catch (err) {
+      console.error("Error jaringan:", err);
+      alert("Terjadi kesalahan jaringan.");
+    }
   }
 
   return (
@@ -217,9 +238,13 @@ function Pengajuan() {
         </div>
 
         <nav className="sidebar-menu">
-          <div className="menu-item">Dashboard</div>
+          <Link to="/" className="menu-item">
+            Dashboard
+          </Link>
           <div className="menu-item disabled">Buat Pengajuan Baru</div>
-          <div className="menu-item">Riwayat pengajuan</div>
+          <Link to="/riwayat" className="menu-item">
+            Riwayat pengajuan
+          </Link>
         </nav>
 
         <div className="logout">Log Out</div>
@@ -547,7 +572,8 @@ function Pengajuan() {
                     {items.map((i) => (
                       <li key={i.id}>
                         {i.nama} — kebutuhan {i.kebutuhanTotal}, sisa stok{" "}
-                        {i.sisaStok}, <strong>diajukan {i.jumlahDiajukan}</strong>{" "}
+                        {i.sisaStok},{" "}
+                        <strong>diajukan {i.jumlahDiajukan}</strong>{" "}
                         {i.satuan}
                       </li>
                     ))}
@@ -557,8 +583,7 @@ function Pengajuan() {
                 <h5>Ringkasan jumlah & nilai:</h5>
                 <p>
                   Total jumlah diajukan:{" "}
-                  <strong>{totalJumlahDiajukan}</strong>{" "}
-                  (akumulasi semua item)
+                  <strong>{totalJumlahDiajukan}</strong>
                   <br />
                   Total nilai pengajuan:{" "}
                   <strong>
