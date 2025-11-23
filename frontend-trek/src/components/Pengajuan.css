@@ -477,3 +477,52 @@ th {
 .btn-danger:hover {
   filter: brightness(0.9);
 }
+.barang-thumb-clickable {
+  cursor: pointer;
+}
+
+/* gambar & teks dalam sel barang */
+.barang-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.barang-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* overlay preview besar */
+.img-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.img-modal {
+  background: #fff;
+  padding: 8px;
+  border-radius: 6px;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.img-modal img {
+  max-width: 100%;
+  max-height: 80vh;
+  display: block;
+}
+
+/* untuk baris di dropdown pencarian */
+.search-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

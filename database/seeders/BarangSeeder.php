@@ -26,6 +26,8 @@ class BarangSeeder extends Seeder
                 'satuan' => 'Pcs',
                 'stok' => 100,
                 'harga_satuan' => 3000,
+                'foto'         => '/images/atk/kertas_a4.png', // path relatif ke /public
+
             ]
         );
 
@@ -36,6 +38,8 @@ class BarangSeeder extends Seeder
                 'satuan' => 'Pcs',
                 'stok' => 80,
                 'harga_satuan' => 7000,
+                'foto'         => '/images/atk/pulpen_hitam.png',
+
             ]
         );
     }
