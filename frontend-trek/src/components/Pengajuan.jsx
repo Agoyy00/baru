@@ -238,7 +238,7 @@ function Pengajuan() {
         </div>
 
         <nav className="sidebar-menu">
-          <Link to="/dashboarduser" className="menu-item">
+          <Link to="/" className="menu-item">
             Dashboard
           </Link>
           <div className="menu-item disabled">Buat Pengajuan Baru</div>
