@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Pengajuan.css";
 
-export default function Dashboard() {
+export default function DashboardAdmin() {
   const navigate = useNavigate();
 
   return (
@@ -16,9 +16,8 @@ export default function Dashboard() {
 
         <nav className="sidebar-menu">
           <div
-            className="menu-item"
-            onClick={() => navigate("/dashboardadmin")}
-            style={{ cursor: "pointer" }}
+            className="menu-item disabled"
+            style={{ cursor: "default" }}
           >
             Dashboard
           </div>
@@ -52,8 +51,8 @@ export default function Dashboard() {
         {/* TOPBAR */}
         <header className="topbar">
           <div>
-            <div className="topbar-title">Dashboard</div>
-            <div className="topbar-sub">Selamat datang: Nama Kamu</div>
+            <div className="topbar-title">Dashboard Admin</div>
+            <div className="topbar-sub">Selamat datang: Admin</div>
           </div>
           <div className="topbar-right">
             <span>Role: Admin</span>

@@ -146,3 +146,8 @@
   border-radius: 6px;
   cursor: pointer;
 }
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
