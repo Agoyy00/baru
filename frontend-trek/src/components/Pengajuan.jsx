@@ -21,7 +21,11 @@ function Pengajuan() {
   const [items, setItems] = useState([]);
   const [step2Error, setStep2Error] = useState("");
 
+  // 🔍 preview foto besar
+  const [previewImage, setPreviewImage] = useState(null);
+
   const API_BASE = "http://127.0.0.1:8000/api";
+  const BACKEND_BASE = "http://127.0.0.1:8000"; // untuk foto
 
   // 🔐 ambil user login dari localStorage
   const storedUser = localStorage.getItem("user");
@@ -72,6 +76,7 @@ function Pengajuan() {
         sisaStok: 0,
         jumlahDiajukan: 0,
         estimasiNilai: barang.harga_satuan, // harga satuan
+        foto: barang.foto || null,          // path foto dari API
       },
     ]);
 
@@ -82,13 +87,7 @@ function Pengajuan() {
 
   // 🔢 hanya boleh angka di input number
   const handleNumericKeyDown = (e) => {
-    const allowedKeys = [
-      "Backspace",
-      "Tab",
-      "ArrowLeft",
-      "ArrowRight",
-      "Delete",
-    ];
+    const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete"];
     if (allowedKeys.includes(e.key)) return;
 
     if (!/^[0-9]$/.test(e.key)) {
@@ -236,8 +235,6 @@ function Pengajuan() {
       }
 
       alert("Pengajuan berhasil dikirim!");
-
-      // Redirect ke halaman riwayat
       window.location.href = "/riwayat";
     } catch (err) {
       console.error("Error jaringan:", err);
@@ -397,9 +394,7 @@ function Pengajuan() {
                       <option>Fakultas Ekonomi</option>
                     </select>
                     {errorsStep1.unit && (
-                      <div className="error-text">
-                        {errorsStep1.unit}
-                      </div>
+                      <div className="error-text">{errorsStep1.unit}</div>
                     )}
                   </div>
                 </div>
@@ -444,9 +439,20 @@ function Pengajuan() {
                             className="search-item"
                             onClick={() => handleAddItem(b)}
                           >
-                            <div>{b.nama}</div>
-                            <div className="search-item-meta">
-                              {b.kode} · Stok gudang: {b.stok} · {b.satuan}
+                            <div className="search-item-row">
+                              {b.foto && (
+                                <img
+                                  src={`${BACKEND_BASE}${b.foto}`}
+                                  alt={b.nama}
+                                  className="barang-thumb"
+                                />
+                              )}
+                              <div>
+                                <div>{b.nama}</div>
+                                <div className="search-item-meta">
+                                  {b.kode} · Stok gudang: {b.stok} · {b.satuan}
+                                </div>
+                              </div>
                             </div>
                           </li>
                         ))}
@@ -480,11 +486,26 @@ function Pengajuan() {
                       )}
                       {items.map((item) => (
                         <tr key={item.id}>
-                          <td>{item.nama}</td>
+                          <td>
+                            <div className="barang-cell">
+                              {item.foto && (
+                                <img
+                                  src={`${BACKEND_BASE}${item.foto}`}
+                                  alt={item.nama}
+                                  className="barang-thumb barang-thumb-clickable"
+                                  onClick={() =>
+                                    setPreviewImage(
+                                      `${BACKEND_BASE}${item.foto}`
+                                    )
+                                  }
+                                />
+                              )}
+                              <span>{item.nama}</span>
+                            </div>
+                          </td>
                           <td>{item.satuan}</td>
                           <td>
-                            Rp{" "}
-                            {item.estimasiNilai.toLocaleString("id-ID")}
+                            Rp {item.estimasiNilai.toLocaleString("id-ID")}
                           </td>
                           <td>
                             <input
@@ -494,10 +515,7 @@ function Pengajuan() {
                               className="input-number"
                               value={item.kebutuhanTotal}
                               onChange={(e) =>
-                                handleChangeKebutuhan(
-                                  item.id,
-                                  e.target.value
-                                )
+                                handleChangeKebutuhan(item.id, e.target.value)
                               }
                             />
                           </td>
@@ -509,10 +527,7 @@ function Pengajuan() {
                               className="input-number"
                               value={item.sisaStok}
                               onChange={(e) =>
-                                handleChangeSisaStok(
-                                  item.id,
-                                  e.target.value
-                                )
+                                handleChangeSisaStok(item.id, e.target.value)
                               }
                             />
                           </td>
@@ -540,9 +555,7 @@ function Pengajuan() {
                 {/* Total nilai semua item */}
                 <div className="total-nilai">
                   Total nilai pengajuan:{" "}
-                  <strong>
-                    Rp {totalNilai.toLocaleString("id-ID")}
-                  </strong>
+                  <strong>Rp {totalNilai.toLocaleString("id-ID")}</strong>
                 </div>
 
                 {step2Error && (
@@ -592,8 +605,7 @@ function Pengajuan() {
                       <li key={i.id}>
                         {i.nama} — kebutuhan {i.kebutuhanTotal}, sisa stok{" "}
                         {i.sisaStok},{" "}
-                        <strong>diajukan {i.jumlahDiajukan}</strong>{" "}
-                        {i.satuan}
+                        <strong>diajukan {i.jumlahDiajukan}</strong> {i.satuan}
                       </li>
                     ))}
                   </ul>
@@ -605,9 +617,7 @@ function Pengajuan() {
                   <strong>{totalJumlahDiajukan}</strong>
                   <br />
                   Total nilai pengajuan:{" "}
-                  <strong>
-                    Rp {totalNilai.toLocaleString("id-ID")}
-                  </strong>
+                  <strong>Rp {totalNilai.toLocaleString("id-ID")}</strong>
                 </p>
 
                 <div className="actions">
@@ -628,6 +638,21 @@ function Pengajuan() {
           </form>
         </section>
       </main>
+
+      {/* MODAL PREVIEW FOTO */}
+      {previewImage && (
+        <div
+          className="img-modal-overlay"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="img-modal"
+            onClick={(e) => e.stopPropagation()} // biar klik gambar nggak nutup
+          >
+            <img src={previewImage} alt="Preview barang" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
