@@ -50,3 +50,43 @@ body{
   text-align: center;
 }
 
+.periode-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 320px;
+
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+
+  padding: 15px 18px;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  z-index: 9999;
+
+  animation: slideIn 0.4s ease-out;
+}
+
+.periode-toast-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #222;
+}
+
+.periode-toast-text {
+  font-size: 14px;
+  line-height: 20px;
+  color: #444;
+}
+
+.periode-toast.open { border-left: 6px solid #28a745; }
+.periode-toast.upcoming { border-left: 6px solid #ffc107; }
+.periode-toast.closed { border-left: 6px solid #dc3545; }
+.periode-toast.none { border-left: 6px solid #6c757d; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(50px); }
+  to { opacity: 1; transform: translateX(0); }
+}

@@ -95,9 +95,11 @@
   padding: 10px;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #000;
 }
-
-.right-side button {
+  
+.right-side button[type="submit"] {
   padding: 10px;
   border: none;
   border-radius: 6px;
@@ -113,86 +115,31 @@
     margin: 0;
     padding: 0;
 }
-.periode-banner {
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-}
 
-/* Warna berbeda sesuai status */
-.periode-banner.open {
-  background-color: #d4edda;
-  color: #155724;
-  border-left: 4px solid #28a745;
-}
-
-.periode-banner.upcoming {
-  background-color: #fff3cd;
-  color: #856404;
-  border-left: 4px solid #ffbf00;
-}
-
-.periode-banner.closed {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-left: 4px solid #dc3545;
-}
-
-.periode-banner.none {
-  background-color: #e2e3e5;
-  color: #383d41;
-  border-left: 4px solid #6c757d;
-}
-/* ===== Banner Info Periode di dalam card login ===== */
-.periode-banner {
+.password-wrapper {
+  position: relative;
   width: 100%;
-  margin: 10px 0 18px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.4;
-  box-sizing: border-box;
-  border-left: 4px solid transparent;
 }
 
-.periode-banner-title {
-  font-weight: 700;
-  margin-bottom: 4px;
-  font-size: 13px;
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px; /* ruang untuk icon */
 }
 
-.periode-banner-text {
-  font-weight: 400;
+.show-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  font-size: 20px;
+  color: #000; /* icon selalu terlihat */
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-/* status: sedang dibuka */
-.periode-banner.open {
-  background-color: #d4edda;
-  color: #155724;
-  border-left-color: #28a745;
+.show-password-btn:hover {
+  color: #000;
 }
-
-/* status: akan dibuka */
-.periode-banner.upcoming {
-  background-color: #fff3cd;
-  color: #856404;
-  border-left-color: #ffbf00;
-}
-
-/* status: sudah lewat */
-.periode-banner.closed {
-  background-color: #f8d7da;
-  color: #721c24;
-  border-left-color: #dc3545;
-}
-
-/* status: belum ditetapkan / error */
-.periode-banner.none {
-  background-color: #e2e3e5;
-  color: #383d41;
-  border-left-color: #6c757d;
-}
-
