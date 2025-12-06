@@ -95,7 +95,7 @@ function Login({ onClose }) {
         navigate("/dashboardadmin");
       } else {
         navigate("/dashboarduser");
-      }
+      } 
 
       // tutup modal
       if (onClose) onClose();
