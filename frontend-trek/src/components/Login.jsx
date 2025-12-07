@@ -36,12 +36,22 @@ function Login({ onClose, periodeInfo, periodeType }) {
         return;
       }
 
-      localStorage.setItem("user", JSON.stringify(data.user));
+      const user = data.user;
 
-      if (data.user.role === "admin") navigate("/dashboardadmin");
-      else navigate("/dashboarduser");
+      // Simpan user ke localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // 🔥 Arahkan sesuai role
+      if (user.role === "superadmin") {
+        navigate("/approval");        // halaman superadmin
+      } else if (user.role === "admin") {
+        navigate("/dashboardadmin");  // halaman admin
+      } else {
+        navigate("/dashboarduser");   // halaman user
+      }
 
       if (onClose) onClose();
+
     } catch (error) {
       console.error("Login error:", error);
       alert("Terjadi kesalahan server!");
@@ -52,22 +62,18 @@ function Login({ onClose, periodeInfo, periodeType }) {
     <div className="modal-overlay">
       <div className="modal-box-small">
 
-        {/* ❌ Tombol Close */}
+        {/* Tombol Close */}
         <button className="close-btn-small" onClick={onClose}>✖</button>
 
         <div className="login-container-small">
 
-          {/* ============================
-              🔹 KIRI — GAMBAR
-          ============================ */}
+          {/* KIRI — LOGO */}
           <div className="left-side-small">
             <img src={logo} className="logo-atas-small" alt="Logo Yarsi" />
             <img src={atk} className="logo-bawah-small" alt="Logo ATK" />
           </div>
 
-          {/* ============================
-              🔹 KANAN — FORM LOGIN
-          ============================ */}
+          {/* KANAN — FORM LOGIN */}
           <div className="right-side-small">
 
             <h2 className="login-title">Login</h2>
@@ -82,7 +88,7 @@ function Login({ onClose, periodeInfo, periodeType }) {
 
             <form onSubmit={handleLogin} className="login-form-small">
 
-              {/* LABEL EMAIL */}
+              {/* Email */}
               <label className="input-label">Email</label>
               <input
                 type="email"
@@ -91,9 +97,8 @@ function Login({ onClose, periodeInfo, periodeType }) {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              {/* LABEL PASSWORD */}
+              {/* Password */}
               <label className="input-label">Password</label>
-
               <div className="password-wrapper-small">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -102,7 +107,6 @@ function Login({ onClose, periodeInfo, periodeType }) {
                   onChange={(e) => setPassword(e.target.value)}
                 />
 
-                {/* 👁️ Show/hide password */}
                 <button
                   type="button"
                   className="show-password-btn-small"
@@ -112,7 +116,7 @@ function Login({ onClose, periodeInfo, periodeType }) {
                 </button>
               </div>
 
-              {/* INGAT SAYA */}
+              {/* Ingat Saya */}
               <label className="checkbox-small">
                 <input
                   type="checkbox"
@@ -122,13 +126,13 @@ function Login({ onClose, periodeInfo, periodeType }) {
                 <span>Ingat Saya</span>
               </label>
 
-              {/* TOMBOL LOGIN */}
+              {/* Tombol Login */}
               <button type="submit" className="submit-btn-small">
                 Masuk
               </button>
             </form>
-          </div>
 
+          </div>
         </div>
       </div>
     </div>

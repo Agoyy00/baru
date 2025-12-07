@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./App.css";
+
 import yarsi from "./gambar/yarsi.png";
+
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Pengajuan from "./components/Pengajuan";
@@ -19,15 +21,17 @@ const API_BASE = "http://127.0.0.1:8000/api";
 function App() {
   const [showLogin, setShowLogin] = useState(false);
 
-  // 🔹 INFORMASI PERIODE UNTUK LOGIN (TIDAK PERNAH DI-CLEAR)
+  // 👉 Informasi periode untuk login (tidak auto-hide)
   const [periodeInfo, setPeriodeInfo] = useState("");
   const [periodeType, setPeriodeType] = useState("none");
 
-  // 🔹 TOAST DI POJOK KANAN (INI YANG BISA AUTO-HIDE)
+  // 👉 Toast di pojok kanan (auto-hide)
   const [toastText, setToastText] = useState("");
   const [toastType, setToastType] = useState("none");
 
-  // 🔹 AMBIL INFO PERIODE DARI BACKEND
+  // ===================================================
+  // 🔹 Ambil informasi periode dari backend
+  // ===================================================
   useEffect(() => {
     async function loadPeriode() {
       try {
@@ -37,11 +41,13 @@ function App() {
         if (!data.periode) {
           const msg =
             data.message || "Periode pengajuan belum ditetapkan oleh admin.";
+
           setPeriodeType("none");
           setPeriodeInfo(msg);
 
           setToastType("none");
           setToastText(msg);
+
           return;
         }
 
@@ -58,11 +64,13 @@ function App() {
           msg = `Periode ${p.tahun_akademik} akan dibuka pada ${mulai.toLocaleString(
             "id-ID"
           )} dan ditutup pada ${selesai.toLocaleString("id-ID")}.`;
+
         } else if (now >= mulai && now <= selesai && data.is_open) {
           type = "open";
           msg = `Periode ${p.tahun_akademik} sedang DIBUKA hingga ${selesai.toLocaleString(
             "id-ID"
           )}.`;
+
         } else {
           type = "closed";
           msg = `Periode ${p.tahun_akademik} sudah DITUTUP pada ${selesai.toLocaleString(
@@ -70,15 +78,16 @@ function App() {
           )}.`;
         }
 
-        // 👉 UNTUK LOGIN (TIDAK DIHAPUS)
+        // 👉 Untuk popup login
         setPeriodeType(type);
         setPeriodeInfo(msg);
 
-        // 👉 UNTUK TOAST (BOLEH DIHAPUS)
+        // 👉 Untuk toast pojok kanan
         setToastType(type);
         setToastText(msg);
       } catch (err) {
         console.error("Gagal mengambil periode:", err);
+
         const msg = "Gagal memuat informasi periode.";
         setPeriodeType("none");
         setPeriodeInfo(msg);
@@ -91,7 +100,9 @@ function App() {
     loadPeriode();
   }, []);
 
-  // 🔹 AUTO-HIDE KHUSUS TOAST SAJA, BUKAN YANG DI LOGIN
+  // ===================================================
+  // 🔹 Toast Auto-hide (5 detik)
+  // ===================================================
   useEffect(() => {
     if (!toastText) return;
 
@@ -109,14 +120,15 @@ function App() {
     return "periode-toast none";
   };
 
+  // ===================================================
+  // 🔹 Render
+  // ===================================================
   return (
     <BrowserRouter>
       {/* 🔔 TOAST DI POJOK KANAN ATAS */}
       {toastText && (
         <div className={getToastClass()}>
-          <div className="periode-toast-title">
-            📢 Informasi Periode Pengajuan
-          </div>
+          <div className="periode-toast-title">📢 Informasi Periode Pengajuan</div>
           <div className="periode-toast-text">{toastText}</div>
         </div>
       )}
@@ -128,6 +140,7 @@ function App() {
           element={
             <>
               <Navbar onLoginClick={() => setShowLogin(true)} />
+
               <div
                 className="landing"
                 style={{
@@ -142,7 +155,6 @@ function App() {
               {showLogin && (
                 <Login
                   onClose={() => setShowLogin(false)}
-                  // ⬇️ info periode tetap dikirim ke login
                   periodeInfo={periodeInfo}
                   periodeType={periodeType}
                 />
