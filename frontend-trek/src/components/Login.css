@@ -1,121 +1,211 @@
+/* =========================
+   MODAL & CONTAINER
+   ========================= */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 999;
 }
 
 .modal-box {
-  width: 800px;
-  height: 500px;
-  background: white;
-  border-radius: 10px;
+  width: 90%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 18px;
   overflow: hidden;
   position: relative;
   display: flex;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
 }
 
 .close-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgb(0, 0, 0);
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
   border: none;
-  font-size: 13px;
+  font-size: 16px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  background: rgba(15, 23, 42, 1);
 }
 
 .login-container {
   display: flex;
   width: 100%;
-  height: 100%;
-  position: center;
+  min-height: 420px;
 }
 
+/* =========================
+   LEFT SIDE (GAMBAR)
+   ========================= */
 .left-side {
-  flex: 1;
+  flex: 1.05;
   background: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  padding: 28px 18px;
 }
 
-.left-top {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50%;
-}
-
+.left-top,
 .left-bottom {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50%;
+  width: 100%;
 }
 
 .logo-atas {
-  width: 180px;
-  margin-bottom: 30px;
+  max-width: 150px;
+  width: 100%;
+  height: auto;
 }
 
 .logo-bawah {
-  width: 350px;
-  margin-bottom: 10px;
+  max-width: 280px;
+  width: 100%;
+  height: auto;
 }
 
+/* =========================
+   RIGHT SIDE (FORM)
+   ========================= */
 .right-side {
   flex: 1;
-  background: #98b7d5;
+  background: #d5e3f4;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 ;
-  height: 100%;
-  max-height: 500px;
+  padding: 32px 40px;
 }
 
-.right-side form {
+.right-inner {
+  width: 100%;
+  max-width: 340px;
   display: flex;
   flex-direction: column;
-  width: 250px;
-  gap: 1rem;
-  margin-top: 0;
+  gap: 14px;
+  align-items: stretch;
 }
 
-.right-side input {
-  padding: 10px;
-  border-radius: 6px;
+.right-inner h2 {
+  text-align: center;
+  margin: 0 0 6px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* =========================
+   PENGUMUMAN PERIODE
+   ========================= */
+.login-periode-info {
+  font-size: 0.86rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #ffffff;
+  border-left: 4px solid #9ca3af;
+  box-shadow: 0 2px 4px rgba(148, 163, 184, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.login-periode-info.open {
+  border-left-color: #16a34a;
+}
+
+.login-periode-info.upcoming {
+  border-left-color: #f97316;
+}
+
+.login-periode-info.closed {
+  border-left-color: #ef4444;
+}
+
+.login-periode-title {
+  font-weight: 600;
+  color: #111827;
+}
+
+.login-periode-text {
+  color: #374151;
+}
+
+/* =========================
+   FORM
+   ========================= */
+.right-inner form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.right-inner input {
+  padding: 10px 12px;
+  border-radius: 8px;
   border: 1px solid #cbd5e1;
   background-color: #ffffff;
-  color: #000;
+  color: #111827;
+  font-size: 0.95rem;
 }
-  
-.right-side button[type="submit"] {
-  padding: 10px;
+
+.right-inner input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+}
+
+/* checkbox */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #111827;
+}
+
+/* tombol submit */
+.submit-btn {
+  padding: 10px 12px;
   border: none;
-  border-radius: 6px;
-  background: #3b82f6;
+  border-radius: 999px;
+  background: #2563eb;
   color: white;
+  font-weight: 600;
   cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.15s ease, transform 0.05s ease;
 }
 
-.checkbox{
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
+.submit-btn:hover {
+  background: #1d4ed8;
 }
 
+.submit-btn:active {
+  transform: translateY(1px);
+}
+
+/* =========================
+   PASSWORD + ICON
+   ========================= */
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -123,7 +213,7 @@
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 45px; /* ruang untuk icon */
+  padding-right: 42px;
 }
 
 .show-password-btn {
@@ -134,12 +224,185 @@
   background: transparent !important;
   border: none !important;
   cursor: pointer;
-  font-size: 20px;
-  color: #000; /* icon selalu terlihat */
+  font-size: 18px;
+  color: #6b7280;
   padding: 0 !important;
   margin: 0 !important;
 }
 
 .show-password-btn:hover {
-  color: #000;
+  color: #111827;
+}
+
+/* =========================
+   RESPONSIVE (LAYAR KECIL)
+   ========================= */
+@media (max-width: 768px) {
+  .modal-box {
+    max-width: 95%;
+  }
+
+  .login-container {
+    flex-direction: column;
+  }
+
+  .left-side {
+    display: none; /* kalau mau disembunyiin di HP */
+  }
+
+  .right-side {
+    flex: 1;
+    padding: 24px 20px;
+  }
+
+  .right-inner {
+    max-width: 100%;
+  }
+}
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+.modal-box-small {
+  width: 800px;
+  height: 500px;
+  background: white;
+  border-radius: 14px;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: black;
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.login-container-small {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.left-small {
+  flex: 1;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 14px;
+}
+
+.logo-small-top {
+  width: 160px;
+  margin-bottom: 20px;
+}
+
+.logo-small-bottom {
+  width: 300px;
+  margin-top: 20px;
+}
+
+.right-small {
+  flex: 1;
+  background: #c9d9ea;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.login-title {
+  margin-bottom: 10px;
+}
+
+.periode-box {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  border-left: 4px solid #9ca3af;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.periode-box.open {
+  border-left-color: #16a34a;
+}
+.periode-box.upcoming {
+  border-left-color: #f97316;
+}
+.periode-box.closed {
+  border-left-color: #ef4444;
+}
+
+.login-form-small {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-form-small input {
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: white;
+}
+
+.password-wrapper-small {
+  position: relative;
+}
+
+.show-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.checkbox {
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+  align-items: center;
+}
+
+.submit-btn-small {
+  padding: 10px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.input-label {
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: -6px;
+  margin-top: 6px;
+  color: #1e293b;
 }
