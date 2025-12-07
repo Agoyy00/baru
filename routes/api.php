@@ -61,3 +61,14 @@ Route::get('/pengajuan/check/{user}/{tahun}', [PengajuanController::class, 'chec
 Route::get('/analytics/item-usage', [PengajuanController::class, 'itemUsage']);
 Route::get('/analisis-barang', [PengajuanController::class, 'analisisBarang']);
 Route::get('/analisis-barang', [PengajuanController::class, 'analisisBarang']);
+
+
+Route::get('/pengajuan', [PengajuanController::class, 'index']);
+Route::post('/pengajuan', [PengajuanController::class, 'store']);
+Route::patch('/pengajuan/{pengajuan}/status', [PengajuanController::class, 'updateStatus']);
+
+// 🔽 route baru revisi item
+Route::patch('/pengajuan-items/{item}/revisi', [PengajuanController::class, 'revisiItem']);
+Route::patch('/pengajuan/{pengajuan}/revisi', [PengajuanController::class, 'revisi']);
+
+Route::patch('/pengajuan/{pengajuan}/revisi', [PengajuanController::class, 'revisiItems']);

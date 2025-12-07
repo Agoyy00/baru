@@ -95,7 +95,6 @@ function Pengajuan() {
         );
 
         if (!res.ok) {
-          // kalau error, jangan blok user, cuma log aja
           console.error("Gagal cek limit pengajuan");
           setLimitError("");
           return;
@@ -167,7 +166,7 @@ function Pengajuan() {
     setStep2Error("");
   };
 
-  // hanya boleh angka di input number
+  // hanya boleh angka (0–9) di keyboard
   const handleNumericKeyDown = (e) => {
     const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete"];
     if (allowedKeys.includes(e.key)) return;
@@ -176,7 +175,8 @@ function Pengajuan() {
 
   // kebutuhan total berubah → jumlah diajukan = kebutuhan - sisa
   const handleChangeKebutuhan = (id, value) => {
-    const num = Number(value) || 0;
+    // ⛔ tidak boleh minus
+    const num = Math.max(0, Number(value) || 0);
     setItems((prev) =>
       prev.map((item) => {
         if (item.id !== id) return item;
@@ -189,7 +189,8 @@ function Pengajuan() {
 
   // sisa stok berubah → jumlah diajukan = kebutuhan - sisa
   const handleChangeSisaStok = (id, value) => {
-    const num = Number(value) || 0;
+    // ⛔ tidak boleh minus
+    const num = Math.max(0, Number(value) || 0);
     setItems((prev) =>
       prev.map((item) => {
         if (item.id !== id) return item;
@@ -370,7 +371,7 @@ function Pengajuan() {
               </div>
             </div>
           ) : !periodeOpen ? (
-            // 2. PERIODE DITUTUP / BELUM DIBUKA → HANYA TAMPIL PESAN MERAH
+            // 2. PERIODE DITUTUP / BELUM DIBUKA
             <div className="card periode-closed-card">
               <div className="card-title">Pengajuan ATK tidak tersedia</div>
               <p>Saat ini pengajuan belum dibuka atau sudah ditutup.</p>
@@ -385,7 +386,7 @@ function Pengajuan() {
               </button>
             </div>
           ) : (
-            // 3. PERIODE TERBUKA → TAMPILKAN FORM PENGAJUAN
+            // 3. PERIODE TERBUKA → FORM
             <>
               <div className="card">
                 <div className="card-title">
@@ -452,7 +453,6 @@ function Pengajuan() {
                           </div>
                         )}
 
-                        {/* ❗ Pesan “hanya 1 kali per periode” */}
                         {limitError && (
                           <div
                             className="error-text"
@@ -631,6 +631,7 @@ function Pengajuan() {
                               <td>
                                 <input
                                   type="number"
+                                  min="0"
                                   inputMode="numeric"
                                   onKeyDown={handleNumericKeyDown}
                                   className="input-number"
@@ -646,6 +647,7 @@ function Pengajuan() {
                               <td>
                                 <input
                                   type="number"
+                                  min="0"
                                   inputMode="numeric"
                                   onKeyDown={handleNumericKeyDown}
                                   className="input-number"
@@ -743,7 +745,7 @@ function Pengajuan() {
                     <h5>Ringkasan jumlah & nilai:</h5>
                     <p>
                       Total jumlah diajukan:{" "}
-                      <strong>{totalJumlahDiajukan}</strong>
+                        <strong>{totalJumlahDiajukan}</strong>
                       <br />
                       Total nilai pengajuan:{" "}
                       <strong>

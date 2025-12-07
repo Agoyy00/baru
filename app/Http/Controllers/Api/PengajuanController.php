@@ -8,7 +8,7 @@ use App\Models\PengajuanItem;
 use App\Models\Periode;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;   // <-- tambahkan ini
+use Illuminate\Support\Facades\DB;
 
 class PengajuanController extends Controller
 {
@@ -198,13 +198,13 @@ class PengajuanController extends Controller
         ]);
 
         $barangId      = $request->query('barang_id');
-        $tahunAkademik = $request->query('tahun_akademik');  // boleh "all" atau null
-        $unit          = $request->query('unit');             // boleh "all" atau null
+        $tahunAkademik = $request->query('tahun_akademik');
+        $unit          = $request->query('unit');
 
         // Info barang
         $barang = DB::table('barangs')->where('id', $barangId)->first();
 
-        if (! $barang) {
+        if (!$barang) {
             return response()->json([
                 'success' => false,
                 'message' => 'Barang tidak ditemukan.',
@@ -226,7 +226,7 @@ class PengajuanController extends Controller
             $baseQuery->where('pengajuans.unit', $unit);
         }
 
-        // ---- Ringkasan total semua unit ----
+        // Ringkasan total semua unit
         $summary = (clone $baseQuery)
             ->selectRaw('
                 SUM(pengajuan_items.kebutuhan_total) as total_kebutuhan,
@@ -235,7 +235,7 @@ class PengajuanController extends Controller
             ')
             ->first();
 
-        if (! $summary || !$summary->total_diajukan) {
+        if (!$summary || !$summary->total_diajukan) {
             return response()->json([
                 'success' => true,
                 'message' => 'Belum ada data pengajuan untuk barang ini dengan filter yang dipilih.',
@@ -245,7 +245,7 @@ class PengajuanController extends Controller
             ]);
         }
 
-        // ---- Group per unit ----
+        // Group per unit
         $perUnitRows = (clone $baseQuery)
             ->selectRaw('
                 pengajuans.unit as unit,
@@ -257,7 +257,6 @@ class PengajuanController extends Controller
             ->orderBy('pengajuans.unit')
             ->get();
 
-        // Tambah field "penggunaan" = kebutuhan - sisa
         $perUnit = $perUnitRows->map(function ($row) {
             $row->penggunaan = ($row->total_kebutuhan ?? 0) - ($row->total_sisa_stok ?? 0);
             return $row;
@@ -282,6 +281,66 @@ class PengajuanController extends Controller
             'unit_filter'    => $unit,
             'summary'        => $summaryData,
             'per_unit'       => $perUnit,
+        ]);
+    }
+
+    /**
+     * PATCH /api/pengajuan/{pengajuan}/revisi
+     *
+     * Admin merevisi jumlah barang + catatan revisi,
+     * lalu menghitung ulang total_jumlah_diajukan & total_nilai.
+     */
+    public function revisiItems(Request $request, Pengajuan $pengajuan)
+    {
+        $validated = $request->validate([
+            'items'                     => 'required|array|min:1',
+            'items.*.id'                => 'required|integer|exists:pengajuan_items,id',
+            'items.*.jumlah_disetujui'  => 'required|integer|min:0',
+            'items.*.catatan_revisi'    => 'nullable|string',
+        ]);
+
+        if (!in_array($pengajuan->status, ['diajukan', 'diverifikasi'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengajuan tidak dapat direvisi karena status sudah ' . $pengajuan->status,
+            ], 422);
+        }
+
+        foreach ($validated['items'] as $rev) {
+            $item = PengajuanItem::where('pengajuan_id', $pengajuan->id)
+                ->where('id', $rev['id'])
+                ->first();
+
+            if (!$item) {
+                continue;
+            }
+
+            $item->jumlah_disetujui = $rev['jumlah_disetujui'];
+            $item->catatan_revisi   = $rev['catatan_revisi'] ?? null;
+            $item->save();
+        }
+
+        // Hitung ulang total berdasarkan jumlah_disetujui (kalau null → jumlah_diajukan)
+        $items = PengajuanItem::where('pengajuan_id', $pengajuan->id)->get();
+
+        $totalJumlah = 0;
+        $totalNilai  = 0;
+
+        foreach ($items as $it) {
+            $qty = $it->jumlah_disetujui ?? $it->jumlah_diajukan;
+            $totalJumlah += $qty;
+            $totalNilai  += $qty * $it->harga_satuan;
+        }
+
+        $pengajuan->total_jumlah_diajukan = $totalJumlah;
+        $pengajuan->total_nilai           = $totalNilai;
+        $pengajuan->status                = 'disetujui';
+        $pengajuan->save();
+
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Revisi jumlah barang berhasil disimpan.',
+            'pengajuan' => $pengajuan->load('items.barang'),
         ]);
     }
 }

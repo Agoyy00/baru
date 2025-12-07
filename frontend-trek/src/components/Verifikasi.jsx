@@ -12,9 +12,8 @@ export default function Verifikasi() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [filterStatus, setFilterStatus] = useState("semua");
-  const [processingId, setProcessingId] = useState(null); // id yang lagi diproses
+  const [processingId, setProcessingId] = useState(null);
 
-  // ambil semua pengajuan untuk admin
   useEffect(() => {
     async function loadPengajuan() {
       try {
@@ -49,7 +48,7 @@ export default function Verifikasi() {
     return <span className="status-badge">{status}</span>;
   };
 
-  // PATCH status ke backend
+  // PATCH status biasa
   const handleUpdateStatus = async (pengajuanId, newStatus) => {
     if (!window.confirm(`Ubah status pengajuan #${pengajuanId} menjadi "${newStatus}"?`)) {
       return;
@@ -74,7 +73,6 @@ export default function Verifikasi() {
         return;
       }
 
-      // update di state
       setData((prev) =>
         prev.map((p) =>
           p.id === pengajuanId ? { ...p, status: newStatus } : p
@@ -88,7 +86,81 @@ export default function Verifikasi() {
     }
   };
 
-  // data setelah difilter status
+  // 🔹 Revisi jumlah + catatan, lalu set status disetujui
+  const handleRevisi = async (pengajuan) => {
+    if (!pengajuan.items || pengajuan.items.length === 0) {
+      alert("Tidak ada item yang bisa direvisi.");
+      return;
+    }
+
+    const revisions = [];
+
+    for (const item of pengajuan.items) {
+      const namaBarang = item.barang?.nama ?? "Barang";
+      const satuan = item.barang?.satuan ?? "";
+      const currentQty = item.jumlah_disetujui ?? item.jumlah_diajukan;
+
+      const qtyStr = window.prompt(
+        `Jumlah disetujui untuk ${namaBarang} (${satuan})`,
+        currentQty
+      );
+
+      if (qtyStr === null) {
+        // batal semua
+        return;
+      }
+
+      const qty = parseInt(qtyStr, 10);
+      if (isNaN(qty) || qty < 0) {
+        alert("Jumlah tidak valid.");
+        return;
+      }
+
+      const reason = window.prompt(
+        `Catatan revisi untuk ${namaBarang} (boleh dikosongkan)`,
+        item.catatan_revisi || ""
+      );
+
+      revisions.push({
+        id: item.id,
+        jumlah_disetujui: qty,
+        catatan_revisi: reason || "",
+      });
+    }
+
+    try {
+      setProcessingId(pengajuan.id);
+
+      const res = await fetch(`${API_BASE}/pengajuan/${pengajuan.id}/revisi`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: revisions }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        console.error("Gagal menyimpan revisi:", json);
+        alert(json.message || "Gagal menyimpan revisi.");
+        return;
+      }
+
+      // update data di state
+      const updated = json.pengajuan;
+
+      setData((prev) =>
+        prev.map((p) => (p.id === updated.id ? updated : p))
+      );
+
+      alert("Revisi berhasil disimpan dan pengajuan disetujui.");
+    } catch (err) {
+      console.error("Error jaringan:", err);
+      alert("Kesalahan jaringan saat menyimpan revisi.");
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const filteredData =
     filterStatus === "semua"
       ? data
@@ -132,7 +204,6 @@ export default function Verifikasi() {
 
       {/* MAIN */}
       <main className="main">
-        {/* TOPBAR */}
         <header className="topbar">
           <div>
             <div className="topbar-title">Verifikasi Pengajuan ATK</div>
@@ -148,7 +219,7 @@ export default function Verifikasi() {
           <div className="card">
             <div className="card-title">Daftar Pengajuan</div>
             <div className="card-subtitle">
-              Admin dapat memverifikasi atau menolak pengajuan ATK.
+              Admin dapat memverifikasi, merevisi, atau menolak pengajuan ATK.
             </div>
 
             {/* FILTER STATUS */}
@@ -212,12 +283,30 @@ export default function Verifikasi() {
                                   {p.items.map((item) => {
                                     const namaBarang = item.barang?.nama ?? "Barang";
                                     const satuan = item.barang?.satuan ?? "";
+                                    const diajukan = item.jumlah_diajukan;
+                                    const disetujui =
+                                      item.jumlah_disetujui ?? item.jumlah_diajukan;
+
                                     return (
                                       <li key={item.id}>
-                                        {namaBarang} —{" "}
-                                        <strong>
-                                          {item.jumlah_diajukan} {satuan}
-                                        </strong>
+                                        {namaBarang} — diajukan{" "}
+                                        <strong>{diajukan} {satuan}</strong>
+                                        {item.jumlah_disetujui != null &&
+                                          item.jumlah_disetujui !== item.jumlah_diajukan && (
+                                            <>
+                                              {" , "}
+                                              disetujui{" "}
+                                              <strong>
+                                                {disetujui} {satuan}
+                                              </strong>{" "}
+                                              (direvisi)
+                                            </>
+                                          )}
+                                        {item.catatan_revisi && (
+                                          <div className="revisi-note">
+                                            Catatan revisi: {item.catatan_revisi}
+                                          </div>
+                                        )}
                                       </li>
                                     );
                                   })}
@@ -225,7 +314,6 @@ export default function Verifikasi() {
                               )}
                             </td>
                             <td>
-                              {/* Kalau masih diajukan → boleh verif / tolak */}
                               {p.status === "diajukan" && (
                                 <>
                                   <button
@@ -250,17 +338,24 @@ export default function Verifikasi() {
                                       ? "Memproses..."
                                       : "Tolak"}
                                   </button>
+                                  <button
+                                    className="btn-status-revisi"
+                                    disabled={processingId === p.id}
+                                    onClick={() => handleRevisi(p)}
+                                  >
+                                    {processingId === p.id
+                                      ? "Memproses..."
+                                      : "Revisi & Setujui"}
+                                  </button>
                                 </>
                               )}
 
-                              {/* Kalau sudah diverifikasi → tidak bisa ditolak lagi */}
                               {p.status === "diverifikasi" && (
                                 <span className="status-text done">
                                   ✓ Sudah diverifikasi
                                 </span>
                               )}
 
-                              {/* Kalau sudah ditolak → tidak bisa diverifikasi */}
                               {p.status === "ditolak" && (
                                 <span className="status-text rejected">
                                   ✗ Pengajuan ditolak

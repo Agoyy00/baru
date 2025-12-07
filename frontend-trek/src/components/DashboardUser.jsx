@@ -17,7 +17,7 @@ export default function DashboardUser() {
   const [notifText, setNotifText] = useState(""); // notifikasi kalau status berubah
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Fungsi untuk ambil pengajuan terbaru user
+  // Ambil pengajuan terbaru user
   async function fetchLatestPengajuan(showNotification = true) {
     if (!userId) {
       setErrorMsg("User belum login.");
@@ -41,7 +41,7 @@ export default function DashboardUser() {
         return;
       }
 
-      // Karena backend sudah orderBy created_at desc, ambil index 0 saja
+      // backend sudah orderBy created_at desc → ambil index 0
       const latest = data[0];
       setLatestPengajuan(latest);
 
@@ -55,29 +55,28 @@ export default function DashboardUser() {
           statusLabel = "Pengajuan Anda telah diverifikasi oleh admin.";
           break;
         case "ditolak":
-          statusLabel = "Pengajuan Anda DITOLAK. Silakan hubungi admin untuk informasi lebih lanjut.";
+          statusLabel =
+            "Pengajuan Anda DITOLAK. Silakan hubungi admin untuk informasi lebih lanjut.";
           break;
         case "disetujui":
-          statusLabel = "Pengajuan Anda DISETUJUI. Proses pengadaan akan dilanjutkan.";
+          statusLabel =
+            "Pengajuan Anda DISETUJUI. Proses pengadaan akan dilanjutkan.";
           break;
         default:
           statusLabel = `Status pengajuan Anda: ${latest.status}`;
       }
       setStatusText(statusLabel);
 
-      // ====== LOGIKA NOTIFIKASI OTOMATIS ======
-      // Simpan status terakhir di localStorage per id pengajuan
+      // ====== NOTIFIKASI PERUBAHAN STATUS ======
       const storageKey = `pengajuan_status_${latest.id}`;
       const prevStatus = localStorage.getItem(storageKey);
 
-      // Kalau status berubah & kita mau menampilkan notifikasi (bukan pertama kali load)
       if (showNotification && prevStatus && prevStatus !== latest.status) {
         setNotifText(
-          `Status pengajuan Anda telah berubah menjadi "${latest.status.toUpperCase()}" `
+          `Status pengajuan Anda telah berubah menjadi "${latest.status.toUpperCase()}".`
         );
       }
 
-      // Update status terbaru ke localStorage
       localStorage.setItem(storageKey, latest.status);
     } catch (err) {
       console.error("Gagal mengambil pengajuan:", err);
@@ -87,17 +86,26 @@ export default function DashboardUser() {
     }
   }
 
-  // Load pertama & polling setiap 30 detik
+  // Load pertama & polling tiap 30 detik
   useEffect(() => {
-    // pertama kali: jangan munculin notif (supaya tidak salah dikira "berubah")
+    // pertama: jangan munculin notif (supaya tidak dikira perubahan)
     fetchLatestPengajuan(false);
 
     const intervalId = setInterval(() => {
       fetchLatestPengajuan(true);
-    }, 30000); // 30 detik
+    }, 30000);
 
     return () => clearInterval(intervalId);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cek apakah ada item yang direvisi (jumlah_disetujui != jumlah_diajukan)
+  const revisedItems =
+    latestPengajuan?.items?.filter(
+      (item) =>
+        item.jumlah_disetujui !== null &&
+        item.jumlah_disetujui !== item.jumlah_diajukan
+    ) || [];
 
   return (
     <div className="layout">
@@ -144,11 +152,11 @@ export default function DashboardUser() {
           <div className="card">
             <div className="card-title">Notifikasi Pengajuan</div>
 
-            {/* Banner info “hanya boleh 1x per periode” */}
+            {/* Info 1x per periode */}
             <div className="info-banner">
-              Pengajuan ATK hanya dapat dilakukan <b>1 kali dalam 1 periode
-              tahun akademik</b>. Pastikan data yang Anda isi sudah benar sebelum
-              mengirim.
+              Pengajuan ATK hanya dapat dilakukan{" "}
+              <b>1 kali dalam 1 periode tahun akademik</b>. Pastikan data yang
+              Anda isi sudah benar sebelum mengirim.
             </div>
 
             {/* Banner notifikasi status berubah */}
@@ -177,11 +185,49 @@ export default function DashboardUser() {
                 </p>
                 <p>
                   <strong>Status:</strong>{" "}
-                  <span className={`badge-status status-${latestPengajuan.status}`}>
+                  <span
+                    className={`badge-status status-${latestPengajuan.status}`}
+                  >
                     {latestPengajuan.status.toUpperCase()}
                   </span>
                 </p>
                 <p>{statusText}</p>
+
+                {/* Jika ada item direvisi, tampilkan ringkasannya */}
+                {revisedItems.length > 0 && (
+                  <div className="revisi-block">
+                    <p style={{ marginTop: 12, marginBottom: 4 }}>
+                      <strong>
+                        Beberapa barang pada pengajuan ini telah direvisi oleh
+                        admin:
+                      </strong>
+                    </p>
+                    <ul style={{ paddingLeft: 20, marginTop: 0 }}>
+                      {revisedItems.map((item) => {
+                        const namaBarang = item.barang?.nama ?? "Barang";
+                        const satuan = item.barang?.satuan ?? "";
+
+                        return (
+                          <li key={item.id}>
+                            {namaBarang} — diajukan{" "}
+                            <strong>
+                              {item.jumlah_diajukan} {satuan}
+                            </strong>
+                            , disetujui{" "}
+                            <strong>
+                              {item.jumlah_disetujui} {satuan}
+                            </strong>
+                            {item.catatan_revisi && (
+                              <div className="revisi-note">
+                                Alasan revisi: {item.catatan_revisi}
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
 
                 <button
                   type="button"

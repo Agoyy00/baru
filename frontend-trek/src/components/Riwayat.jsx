@@ -9,7 +9,7 @@ export default function Riwayat() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // 🔐 ambil user login
+  // ambil user login
   const storedUser = localStorage.getItem("user");
   const currentUser = storedUser ? JSON.parse(storedUser) : null;
   const userId = currentUser?.id;
@@ -25,7 +25,6 @@ export default function Riwayat() {
       try {
         setLoading(true);
 
-        // 🔥 Load pengajuan hanya milik user ini
         const res = await fetch(`${API_BASE}/pengajuan?user_id=${userId}`);
         const json = await res.json();
         setData(json);
@@ -66,12 +65,18 @@ export default function Riwayat() {
         </div>
 
         <nav className="sidebar-menu">
-          <Link to="/dashboarduser" className="menu-item">Dashboard</Link>
-          <Link to="/pengajuan" className="menu-item">Buat Pengajuan Baru</Link>
+          <Link to="/dashboarduser" className="menu-item">
+            Dashboard
+          </Link>
+          <Link to="/pengajuan" className="menu-item">
+            Buat Pengajuan Baru
+          </Link>
           <div className="menu-item disabled">Riwayat pengajuan</div>
         </nav>
 
-        <Link to="/" className="logout">Log Out</Link>
+        <Link to="/" className="logout">
+          Log Out
+        </Link>
       </aside>
 
       {/* KANAN */}
@@ -146,12 +151,35 @@ export default function Riwayat() {
                                     const namaBarang = item.barang?.nama ?? "Barang";
                                     const satuan = item.barang?.satuan ?? "";
 
+                                    const diajukan = item.jumlah_diajukan;
+                                    const disetujui =
+                                      item.jumlah_disetujui ?? item.jumlah_diajukan;
+
+                                    const direvisi =
+                                      item.jumlah_disetujui != null &&
+                                      item.jumlah_disetujui !== item.jumlah_diajukan;
+
                                     return (
                                       <li key={item.id}>
-                                        {namaBarang} —{" "}
+                                        {namaBarang} — diajukan{" "}
                                         <strong>
-                                          {item.jumlah_diajukan} {satuan}
+                                          {diajukan} {satuan}
                                         </strong>
+                                        {direvisi && (
+                                          <>
+                                            {" , "}
+                                            disetujui{" "}
+                                            <strong>
+                                              {disetujui} {satuan}
+                                            </strong>{" "}
+                                            (direvisi)
+                                          </>
+                                        )}
+                                        {item.catatan_revisi && (
+                                          <div className="revisi-note">
+                                            Catatan revisi: {item.catatan_revisi}
+                                          </div>
+                                        )}
                                       </li>
                                     );
                                   })}
