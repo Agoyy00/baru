@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom";
-import "./pengajuan.css";
+// src/components/Approval.jsx
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "./Pengajuan.css";
 
 export default function Approval() {
-  const currentUser = { name: "Nama Kamu" }; // contoh, ganti sesuai konteks
+  const navigate = useNavigate();
+
+  const storedUser = localStorage.getItem("user");
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
 
   return (
     <div className="layout">
@@ -14,18 +19,43 @@ export default function Approval() {
         </div>
 
         <nav className="sidebar-menu">
-          <div className="menu-item disabled">Dashboard</div>
-          <Link to="/pengajuan" className="menu-item">
-            Buat Pengajuan Baru
-          </Link>
-          <Link to="/riwayat" className="menu-item">
-            Riwayat Pengajuan
-          </Link>
+          {/* Dashboard Super Admin (halaman ini) */}
+          <div
+            className="menu-item disabled"
+            style={{ cursor: "default" }}
+          >
+            Dashboard Super Admin
+          </div>
+
+          {/* 🔹 Analisis Data (dulu: Grafik) */}
+          <div
+            className="menu-item"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/grafik")}
+          >
+            Analisis Data
+          </div>
+
+          {/* Tambah User */}
+          <div
+            className="menu-item"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/tambahuser")}
+          >
+            Tambah User
+          </div>
         </nav>
 
-        <Link to="/" className="logout">
+        <div
+          className="logout"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            localStorage.removeItem("user");
+            window.location.href = "/";
+          }}
+        >
           Log Out
-        </Link>
+        </div>
       </aside>
 
       {/* MAIN */}
@@ -33,22 +63,27 @@ export default function Approval() {
         {/* TOPBAR */}
         <header className="topbar">
           <div>
-            <div className="topbar-title">Dashboard Pemohon</div>
+            <div className="topbar-title">Dashboard Super Admin</div>
             <div className="topbar-sub">
-              Selamat datang: {currentUser?.name || "Nama Kamu"}
+              Selamat datang: {currentUser?.name || "Super Admin ATK"}
             </div>
           </div>
           <div className="topbar-right">
-            <span>Role: User</span>
-            <span className="role-pill">User</span>
+            <span>Role: Super Admin</span>
+            <span className="role-pill">Super Admin</span>
           </div>
         </header>
 
         {/* CONTENT */}
         <section className="main-content">
           <div className="card">
-            <div className="card-title">Notifikasi Pengajuan</div>
-            {/* Isi konten notifikasi */}
+            <div className="card-title">Panel Super Admin</div>
+            <p>
+              Super Admin dapat mengelola user (menambah akun admin / user),
+              serta melakukan <strong>analisis data pengajuan</strong> berdasarkan
+              item spesifik (misalnya penggunaan kertas, pulpen, dan lain-lain)
+              di seluruh unit untuk memantau efisiensi program pengadaan ATK.
+            </p>
           </div>
         </section>
       </main>

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PengajuanItem extends Model
 {
@@ -14,15 +13,19 @@ class PengajuanItem extends Model
         'sisa_stok',
         'jumlah_diajukan',
         'harga_satuan',
-        'subtotal', // jumlah_diajukan * harga_satuan
+        'subtotal',
+
+        // 🔽 kolom baru revisi
+        'jumlah_disetujui',
+        'catatan_revisi',
     ];
 
-    public function pengajuan(): BelongsTo
+    public function pengajuan()
     {
         return $this->belongsTo(Pengajuan::class);
     }
 
-    public function barang(): BelongsTo
+    public function barang()
     {
         return $this->belongsTo(Barang::class);
     }

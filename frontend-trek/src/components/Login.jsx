@@ -33,17 +33,22 @@ function Login({ onClose }) {
         return;
       }
 
-      // Simpan user
-      localStorage.setItem("user", JSON.stringify(data.user));
+      const user = data.user;
 
-      // Redirect berdasarkan role
-      if (data.user.role === "admin") {
-        navigate("/dashboardadmin");
+      // Simpan user ke localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // 🔥 Arahkan sesuai role
+      if (user.role === "superadmin") {
+        navigate("/approval");        // halaman superadmin
+      } else if (user.role === "admin") {
+        navigate("/dashboardadmin");  // halaman admin
       } else {
-        navigate("/dashboarduser");
+        navigate("/dashboarduser");   // halaman user
       }
 
       if (onClose) onClose();
+
     } catch (error) {
       console.error("Login error:", error);
       alert("Terjadi kesalahan saat menghubungi server!");
@@ -57,23 +62,34 @@ function Login({ onClose }) {
           ✖
         </button>
 
-        <div className="login-container">
-          {/* Kiri: logo */}
-          <div className="left-side">
-            <div className="left-top">
-              <img src={logo} className="logo-atas" alt="Logo Yarsi" />
-            </div>
+        {/* Tombol Close */}
+        <button className="close-btn-small" onClick={onClose}>✖</button>
 
-            <div className="left-bottom">
-              <img src={atk} className="logo-bawah" alt="Logo ATK" />
-            </div>
+        <div className="login-container-small">
+
+          {/* KIRI — LOGO */}
+          <div className="left-side-small">
+            <img src={logo} className="logo-atas-small" alt="Logo Yarsi" />
+            <img src={atk} className="logo-bawah-small" alt="Logo ATK" />
           </div>
 
-          {/* Kanan: form */}
-          <div className="right-side">
-            <h2>Login</h2>
+          {/* KANAN — FORM LOGIN */}
+          <div className="right-side-small">
 
-            <form onSubmit={handleLogin}>
+            <h2 className="login-title">Login</h2>
+
+            {/* 🔔 Pengumuman Periode */}
+            {periodeInfo && (
+              <div className={`periode-box-login ${periodeType}`}>
+                <strong>📢 Informasi Periode Pengajuan</strong>
+                <p>{periodeInfo}</p>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="login-form-small">
+
+              {/* Email */}
+              <label className="input-label">Email</label>
               <input
                 type="email"
                 placeholder="Email"
@@ -81,8 +97,9 @@ function Login({ onClose }) {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              {/* 👁️ Password + Show/Hide */}
-              <div className="password-wrapper">
+              {/* Password */}
+              <label className="input-label">Password</label>
+              <div className="password-wrapper-small">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
@@ -99,7 +116,8 @@ function Login({ onClose }) {
                 </button>
               </div>
 
-              <label className="checkbox">
+              {/* Ingat Saya */}
+              <label className="checkbox-small">
                 <input
                   type="checkbox"
                   checked={ceklis}
@@ -108,8 +126,12 @@ function Login({ onClose }) {
                 <span>Ingat Saya</span>
               </label>
 
-              <button type="submit">Masuk</button>
+              {/* Tombol Login */}
+              <button type="submit" className="submit-btn-small">
+                Masuk
+              </button>
             </form>
+
           </div>
         </div>
       </div>

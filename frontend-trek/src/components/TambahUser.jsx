@@ -1,8 +1,61 @@
-import { Link } from "react-router-dom";
-import "./pengajuan.css";
+// src/components/TambahUser.jsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Pengajuan.css";   // pakai layout yang sama
+
+const API_BASE = "http://127.0.0.1:8000/api";
 
 export default function TambahUser() {
-  const currentUser = { name: "Nama Kamu" }; // contoh, ganti sesuai konteks
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("user");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Ambil user login (harusnya superadmin)
+  const storedUser = localStorage.getItem("user");
+  const currentUser = storedUser ? JSON.parse(storedUser) : null;
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setMessage("");
+    setErrorMsg("");
+
+    if (!name || !email || !password) {
+      setErrorMsg("Semua field wajib diisi.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setErrorMsg(data.message || "Gagal menambah user.");
+        console.error("Error tambah user:", data);
+        return;
+      }
+
+      setMessage(
+        `User ${data.user.email} berhasil dibuat dengan role ${data.user.role}.`
+      );
+      setName("");
+      setEmail("");
+      setPassword("");
+      setRole("user");
+    } catch (err) {
+      console.error("Error jaringan:", err);
+      setErrorMsg("Terjadi kesalahan jaringan.");
+    }
+  }
 
   return (
     <div className="layout">
@@ -14,41 +67,132 @@ export default function TambahUser() {
         </div>
 
         <nav className="sidebar-menu">
-          <div className="menu-item disabled">Dashboard</div>
-          <Link to="/pengajuan" className="menu-item">
-            Buat Pengajuan Baru
-          </Link>
-          <Link to="/riwayat" className="menu-item">
-            Riwayat Pengajuan
-          </Link>
+          <div
+            className="menu-item"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/approval")}
+          >
+            Dashboard Super Admin
+          </div>
+
+          <div
+            className="menu-item"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/grafik")}
+          >
+            Analisis Data
+          </div>
+
+          <div
+            className="menu-item disabled"
+            style={{ cursor: "default" }}
+          >
+            Tambah User
+          </div>
         </nav>
 
-        <Link to="/" className="logout">
+        <div
+          className="logout"
+          onClick={() => {
+            localStorage.removeItem("user");
+            window.location.href = "/";
+          }}
+          style={{ cursor: "pointer" }}
+        >
           Log Out
-        </Link>
+        </div>
       </aside>
 
       {/* MAIN */}
       <main className="main">
-        {/* TOPBAR */}
         <header className="topbar">
           <div>
-            <div className="topbar-title">Dashboard Pemohon</div>
+            <div className="topbar-title">Tambah User Baru</div>
             <div className="topbar-sub">
-              Selamat datang: {currentUser?.name || "Nama Kamu"}
+              Super Admin dapat menambahkan akun admin / user baru.
             </div>
           </div>
           <div className="topbar-right">
-            <span>Role: User</span>
-            <span className="role-pill">User</span>
+            <span>Role: {currentUser?.role || "superadmin"}</span>
+            <span className="role-pill">
+              {currentUser?.role || "superadmin"}
+            </span>
           </div>
         </header>
 
-        {/* CONTENT */}
         <section className="main-content">
           <div className="card">
-            <div className="card-title">Notifikasi Pengajuan</div>
-            {/* Isi konten notifikasi */}
+            <div className="card-title">Form Tambah User</div>
+            <div className="card-subtitle">
+              Isi data user yang akan dibuat.
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 16,
+                  maxWidth: 400,
+                }}
+              >
+                <div className="form-group">
+                  <label>Nama</label>
+                  <input
+                    type="text"
+                    className="input-text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    className="input-text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Password Awal</label>
+                  <input
+                    type="password"
+                    className="input-text"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Role</label>
+                  <select
+                    className="select-input"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
+                  </select>
+                </div>
+
+                <button type="submit" className="btn btn-primary">
+                  Simpan User
+                </button>
+
+                {message && (
+                  <p style={{ color: "green", marginTop: 8 }}>{message}</p>
+                )}
+                {errorMsg && (
+                  <p className="error-text" style={{ marginTop: 8 }}>
+                    {errorMsg}
+                  </p>
+                )}
+              </div>
+            </form>
           </div>
         </section>
       </main>
