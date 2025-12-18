@@ -262,20 +262,24 @@ p{
     padding: 8px 18px;
     font-size: 14px;
     cursor: pointer;
-    border-radius: 2px;
     background: #f5f5f5;
     color: #000000;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .btn-primary {
-    background: #1f9a3f;
     color: #fff;
     border-color: #1f9a3f;
     margin-left: auto;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 4px 10px rgba(34,197,94,0.35);
 }
 
 .btn-primary:hover {
     filter: brightness(0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(34,197,94,0.45);
 }
 
 .btn-outline {
@@ -308,13 +312,18 @@ table {
     border-collapse: collapse;
     font-size: 13px;
     margin-top: 8px;
-    min-width: 700px; /* supaya kolom nggak kepres di layar kecil */
+    min-width: 700px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
 }
 
 th, td {
     padding: 6px 8px;
     border-bottom: 1px solid #ddd;
     text-align: left;
+    background: #f8fafc;
+    color: #000000;
 }
 
 th {
@@ -388,8 +397,10 @@ th {
     opacity: 0.7;
 }
 
-.info-banner{
-  color: #000000;
+.info-banner,
+.notif-banner {
+  border-radius: 8px;
+  font-weight: 500;
 }
 
 /* RESPONSIVE */
@@ -482,9 +493,9 @@ th {
 }
 
 .btn-danger {
-  background: #d9534f;
   color: white;
   border-color: #d9534f;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
 }
 
 .btn-danger:hover {
@@ -522,9 +533,10 @@ th {
 .img-modal {
   background: #fff;
   padding: 8px;
-  border-radius: 6px;
   max-width: 90vw;
   max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 .img-modal img {
@@ -703,11 +715,13 @@ th {
 /* Badge status */
 .badge-status {
   display: inline-block;
-  padding: 2px 8px;
   border-radius: 999px;
-  font-size: 12px;
   font-weight: 600;
   color: white;
+  padding: 4px 10px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .status-diajukan {
@@ -741,5 +755,3 @@ th {
   font-size: 11px;
   color: #b91c1c;
 }
-
-
