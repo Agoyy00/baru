@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Pengajuan.css";
+import "./layout.css";
 
 function Pengajuan() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -433,115 +434,115 @@ function Pengajuan() {
               <form onSubmit={handleSubmit}>
                 {/* STEP 1 */}
                 {currentStep === 1 && (
-  <div className="step-pane active">
-    <div className="form-card">
-      <div className="form-card-header">
-        <h3>Data Pengajuan</h3>
-        <p>Lengkapi informasi pemohon sebelum melanjutkan</p>
-      </div>
+                  <div className="step-pane active">
+                    <div className="form-card">
+                      <div className="form-card-header">
+                        <h3>Data Pengajuan</h3>
+                        <p>Lengkapi informasi pemohon sebelum melanjutkan</p>
+                      </div>
 
-      <div className="form-grid-pro">
-        {/* Tahun Akademik */}
-        <div className="form-group-pro">
-          <label>
-            Tahun Akademik <span className="required">*</span>
-          </label>
-          <select
-            className="input-pro"
-            value={tahunAkademik}
-            onChange={(e) => setTahunAkademik(e.target.value)}
-          >
-            <option value="">Pilih Tahun Akademik</option>
-            <option value="2023/2024">2023 / 2024</option>
-            <option value="2024/2025">2024 / 2025</option>
-            <option value="2025/2026">2025 / 2026</option>
-          </select>
+                      <div className="form-grid-pro">
+                        {/* Tahun Akademik */}
+                        <div className="form-group-pro">
+                          <label>
+                            Tahun Akademik <span className="required">*</span>
+                          </label>
+                          <select
+                            className="input-pro"
+                            value={tahunAkademik}
+                            onChange={(e) => setTahunAkademik(e.target.value)}
+                          >
+                            <option value="">Pilih Tahun Akademik</option>
+                            <option value="2023/2024">2023 / 2024</option>
+                            <option value="2024/2025">2024 / 2025</option>
+                            <option value="2025/2026">2025 / 2026</option>
+                          </select>
 
-          {errorsStep1.tahunAkademik && (
-            <div className="error-text">
-              {errorsStep1.tahunAkademik}
-            </div>
-          )}
+                          {errorsStep1.tahunAkademik && (
+                            <div className="error-text">
+                              {errorsStep1.tahunAkademik}
+                            </div>
+                          )}
 
-          {limitError && (
-            <div className="error-text danger">
-              {limitError}
-            </div>
-          )}
-        </div>
+                          {limitError && (
+                            <div className="error-text danger">
+                              {limitError}
+                            </div>
+                          )}
+                        </div>
 
-        {/* Nama Pemohon */}
-        <div className="form-group-pro">
-          <label>
-            Nama Pemohon <span className="required">*</span>
-          </label>
-          <input
-            type="text"
-            className="input-pro"
-            placeholder="Masukkan nama lengkap"
-            value={namaPemohon}
-            onChange={(e) => setNamaPemohon(e.target.value)}
-          />
-          {errorsStep1.namaPemohon && (
-            <div className="error-text">
-              {errorsStep1.namaPemohon}
-            </div>
-          )}
-        </div>
+                        {/* Nama Pemohon */}
+                        <div className="form-group-pro">
+                          <label>
+                            Nama Pemohon <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="input-pro"
+                            placeholder="Masukkan nama lengkap"
+                            value={namaPemohon}
+                            onChange={(e) => setNamaPemohon(e.target.value)}
+                          />
+                          {errorsStep1.namaPemohon && (
+                            <div className="error-text">
+                              {errorsStep1.namaPemohon}
+                            </div>
+                          )}
+                        </div>
 
-        {/* Jabatan */}
-        <div className="form-group-pro">
-          <label>
-            Jabatan <span className="required">*</span>
-          </label>
-          <select
-            className="input-pro"
-            value={jabatan}
-            onChange={(e) => setJabatan(e.target.value)}
-          >
-            <option>Staf</option>
-            <option>Dosen</option>
-            <option>Mahasiswa</option>
-          </select>
-        </div>
+                        {/* Jabatan */}
+                        <div className="form-group-pro">
+                          <label>
+                            Jabatan <span className="required">*</span>
+                          </label>
+                          <select
+                            className="input-pro"
+                            value={jabatan}
+                            onChange={(e) => setJabatan(e.target.value)}
+                          >
+                            <option>Staf</option>
+                            <option>Dosen</option>
+                            <option>Mahasiswa</option>
+                          </select>
+                        </div>
 
-        {/* Unit */}
-        <div className="form-group-pro">
-          <label>
-            Unit / Bagian <span className="required">*</span>
-          </label>
-          <select
-            className="input-pro"
-            value={unit}
-            onChange={(e) => setUnit(e.target.value)}
-          >
-            <option>Direktorat</option>
-            <option>DPJJ</option>
-            <option>PDJAMA</option>
-            <option>Pascasarjana</option>
-            <option>Fakultas Kedokteran</option>
-            <option>Fakultas Kedokteran Gigi</option>
-            <option>Fakultas Teknologi Informasi</option>
-            <option>Fakultas Hukum</option>
-            <option>Fakultas Psikologi</option>
-            <option>Fakultas Ekonomi</option>
-          </select>
-        </div>
-      </div>
-    </div>
+                        {/* Unit */}
+                        <div className="form-group-pro">
+                          <label>
+                            Unit / Bagian <span className="required">*</span>
+                          </label>
+                          <select
+                            className="input-pro"
+                            value={unit}
+                            onChange={(e) => setUnit(e.target.value)}
+                          >
+                            <option>Direktorat</option>
+                            <option>DPJJ</option>
+                            <option>PDJAMA</option>
+                            <option>Pascasarjana</option>
+                            <option>Fakultas Kedokteran</option>
+                            <option>Fakultas Kedokteran Gigi</option>
+                            <option>Fakultas Teknologi Informasi</option>
+                            <option>Fakultas Hukum</option>
+                            <option>Fakultas Psikologi</option>
+                            <option>Fakultas Ekonomi</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
 
-    <div className="actions">
-      <span />
-      <button
-        type="button"
-        className="btn btn-primary"
-        onClick={handleNextFromStep1}
-      >
-        Selanjutnya: Input Barang
-      </button>
-    </div>
-  </div>
-)}
+                    <div className="actions">
+                      <span />
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={handleNextFromStep1}
+                      >
+                        Selanjutnya: Input Barang
+                      </button>
+                    </div>
+                  </div>
+                )}
 
 
                 {/* STEP 2 */}

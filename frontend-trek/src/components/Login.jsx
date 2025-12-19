@@ -49,26 +49,18 @@ function Login({ onClose }) {
   return (
     <div className="modal-overlay">
       <div className="modal-box-small">
-        {/* ❌ Tombol Close */}
         <button className="close-btn-small" onClick={onClose} aria-label="Tutup login">
           ✖
         </button>
 
         <div className="login-container-small">
-
-          {/* ============================
-              🔹 KIRI — GAMBAR
-          ============================ */}
           <div className="left-side-small">
             <img src={logo} className="logo-atas-small" alt="Logo Yarsi" />
             <img src={atk} className="logo-bawah-small" alt="Logo ATK" />
           </div>
 
-          {/* ============================
-              🔹 KANAN — FORM LOGIN
-          ============================ */}
+          {/* KANAN — FORM LOGIN */}
           <div className="right-side-small">
-
             <h2 className="login-title">Login</h2>
             <form onSubmit={handleLogin} className="login-form-small">
 
@@ -96,7 +88,7 @@ function Login({ onClose }) {
                     required
                   />
 
-                  {/* 👁️ Show/hide password */}
+                  {/* Show/hide password */}
                   <button
                     type="button"
                     className="show-password-btn-small"

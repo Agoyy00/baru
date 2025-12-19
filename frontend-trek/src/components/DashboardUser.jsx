@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Pengajuan.css";
+import "./Dashboard.css";
+import "./layout.css";
 
 const API_BASE = "http://127.0.0.1:8000/api";
 
